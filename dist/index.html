@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Line Chart Multiple Axes</title>
+	<script src="https://www.chartjs.org/dist/2.9.4/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"
+		integrity="sha512-AcZyhRP/tbAEsXCCGlziPun5iFvcSUpEz2jKkx0blkYKbxU81F+iq8FURwPn1sYFeksJ+sDDrI5XujsqSobWdQ=="
+		crossorigin="anonymous"></script>
+	<script src="./utils.js"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="width:75%;" class="container">
+		<center>
+			<canvas id="canvasAccel"></canvas>
+			<canvas id="canvasGforce"></canvas>
+			<canvas id="canvasGyro"></canvas>
+			<canvas id="canvasRot"></canvas>
+		</center>
+	</div>
+	<script>
+		var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+		let socket = io.connect(full);
+
+		let label = [];
+		let accX = [];
+		let accY = [];
+		let accZ = [];
+		let gForceX = [];
+		let gForceY = [];
+		let gForceZ = [];
+		let gyroX = [];
+		let gyroY = [];
+		let gyroZ = [];
+		let rotX = [];
+		let rotY = [];
+		let rotZ = [];
+
+		function accelLoad() {
+			var lineChartData = {
+				labels: label,
+				datasets: [{
+					label: 'accelX',
+					borderColor: window.chartColors.red,
+					backgroundColor: window.chartColors.red,
+					fill: false,
+					data: accX,
+					yAxisID: 'accelX',
+				}, {
+					label: 'accelY',
+					borderColor: window.chartColors.blue,
+					backgroundColor: window.chartColors.blue,
+					fill: false,
+					data: accY,
+					yAxisID: 'accelY'
+				}, {
+					label: 'accelZ',
+					borderColor: window.chartColors.green,
+					backgroundColor: window.chartColors.green,
+					fill: false,
+					data: accZ,
+					yAxisID: 'accelZ'
+				}]
+			};
+
+			var ctx = document.getElementById('canvasAccel').getContext('2d');
+			window.myLine = Chart.Line(ctx, {
+				data: lineChartData,
+				options: {
+					responsive: true,
+					hoverMode: 'index',
+					stacked: false,
+					title: {
+						display: true,
+						text: 'accel'
+					},
+					scales: {
+						yAxes: [{
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'accelX',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'accelY',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'accelZ',
+						}],
+					}
+				}
+			});
+
+			return window.myLine;
+		}
+
+		function gforceLoad() {
+			var lineChartData = {
+				labels: label,
+				datasets: [{
+					label: 'gForceX',
+					borderColor: window.chartColors.red,
+					backgroundColor: window.chartColors.red,
+					fill: false,
+					data: gForceX,
+					yAxisID: 'gForceX',
+				}, {
+					label: 'gForceY',
+					borderColor: window.chartColors.blue,
+					backgroundColor: window.chartColors.blue,
+					fill: false,
+					data: gForceY,
+					yAxisID: 'gForceY'
+				}, {
+					label: 'gForceZ',
+					borderColor: window.chartColors.green,
+					backgroundColor: window.chartColors.green,
+					fill: false,
+					data: gForceZ,
+					yAxisID: 'gForceZ'
+				}]
+			};
+
+			var ctx = document.getElementById('canvasGforce').getContext('2d');
+			window.myLine2 = Chart.Line(ctx, {
+				data: lineChartData,
+				options: {
+					responsive: true,
+					hoverMode: 'index',
+					stacked: false,
+					title: {
+						display: true,
+						text: 'gForce'
+					},
+					scales: {
+						yAxes: [{
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gForceX',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gForceY',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gForceZ',
+						}],
+					}
+				}
+			});
+
+			return window.myLine2;
+		}
+
+		function gyroLoad() {
+			var lineChartData = {
+				labels: label,
+				datasets: [{
+					label: 'gyroX',
+					borderColor: window.chartColors.red,
+					backgroundColor: window.chartColors.red,
+					fill: false,
+					data: gyroX,
+					yAxisID: 'gyroX',
+				}, {
+					label: 'gyroY',
+					borderColor: window.chartColors.blue,
+					backgroundColor: window.chartColors.blue,
+					fill: false,
+					data: gyroY,
+					yAxisID: 'gyroY'
+				}, {
+					label: 'gyroZ',
+					borderColor: window.chartColors.green,
+					backgroundColor: window.chartColors.green,
+					fill: false,
+					data: gyroZ,
+					yAxisID: 'gyroZ'
+				}]
+			};
+
+			var ctx = document.getElementById('canvasGyro').getContext('2d');
+			window.myLine3 = Chart.Line(ctx, {
+				data: lineChartData,
+				options: {
+					responsive: true,
+					hoverMode: 'index',
+					stacked: false,
+					title: {
+						display: true,
+						text: 'gyro'
+					},
+					scales: {
+						yAxes: [{
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gyroX',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gyroY',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'gyroZ',
+						}],
+					}
+				}
+			});
+
+			return window.myLine3;
+		}
+
+		function rotLoad() {
+			var lineChartData = {
+				labels: label,
+				datasets: [{
+					label: 'rotX',
+					borderColor: window.chartColors.red,
+					backgroundColor: window.chartColors.red,
+					fill: false,
+					data: rotX,
+					yAxisID: 'rotX',
+				}, {
+					label: 'rotY',
+					borderColor: window.chartColors.blue,
+					backgroundColor: window.chartColors.blue,
+					fill: false,
+					data: rotY,
+					yAxisID: 'rotY'
+				}, {
+					label: 'rotZ',
+					borderColor: window.chartColors.green,
+					backgroundColor: window.chartColors.green,
+					fill: false,
+					data: rotZ,
+					yAxisID: 'rotZ'
+				}]
+			};
+
+			var ctx = document.getElementById('canvasRot').getContext('2d');
+			window.myLine4 = Chart.Line(ctx, {
+				data: lineChartData,
+				options: {
+					responsive: true,
+					hoverMode: 'index',
+					stacked: false,
+					title: {
+						display: true,
+						text: 'rotation'
+					},
+					scales: {
+						yAxes: [{
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'rotX',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'rotY',
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'rotZ',
+						}],
+					}
+				}
+			});
+
+			return window.myLine4;
+		}
+
+		window.myLine = accelLoad();
+		window.myLine2 = gforceLoad();
+		window.myLine3 = gyroLoad();
+		window.myLine4 = rotLoad();
+
+		socket.on('pkt', function (pkt) {
+			console.log(pkt);
+			label.push(pkt.timestamp);
+			maintainTopTen(label);
+
+			accX.push(pkt.accelX);
+			maintainTopTen(accX)
+			accY.push(pkt.accelY);
+			maintainTopTen(accY)
+			accZ.push(pkt.accelZ);
+			maintainTopTen(accZ)
+
+			gForceX.push(pkt.gForceX);
+			maintainTopTen(gForceX)
+			gForceY.push(pkt.gForceY);
+			maintainTopTen(gForceY)
+			gForceZ.push(pkt.gForceZ);
+			maintainTopTen(gForceZ)
+
+			gyroX.push(pkt.gyroX);
+			maintainTopTen(gyroX)
+			gyroY.push(pkt.gyroY);
+			maintainTopTen(gyroY)
+			gyroZ.push(pkt.gyroZ);
+			maintainTopTen(gyroZ)
+
+			rotX.push(pkt.rotX);
+			maintainTopTen(rotX)
+			rotY.push(pkt.rotY);
+			maintainTopTen(rotY)
+			rotZ.push(pkt.rotZ);
+			maintainTopTen(rotZ)
+
+			window.myLine.update();
+			window.myLine2.update();
+			window.myLine3.update();
+			window.myLine4.update();
+		});
+
+		function maintainTopTen(list) {
+			if (list.length > 10) {
+				list.splice(0, list.length - 10)
+			}
+			return list;
+		}
+
+	</script>
+</body>
+
+</html>
