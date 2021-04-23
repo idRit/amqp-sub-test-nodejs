@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
 
     socket.on("fwdPkt", data => {
         console.log(data);
-        io.emit("pkt", data);
+        io.emit("pkt" + data.token, data);
     });
 
     socket.on('disconnect', () => {

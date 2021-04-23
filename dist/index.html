@@ -297,7 +297,10 @@
 		window.myLine3 = gyroLoad();
 		window.myLine4 = rotLoad();
 
-		socket.on('pkt', function (pkt) {
+		let url = new URL(window.location.href);
+		let c = url.searchParams.get("node");
+
+		socket.on('pkt' + c, function (pkt) {
 			console.log(pkt);
 			label.push(pkt.timestamp);
 			maintainTopTen(label);

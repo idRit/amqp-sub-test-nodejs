@@ -12,8 +12,7 @@ amqp.connect(CONN_URL, function (err, conn) {
                 setTimeout(function(){
                     console.log(JSON.parse(msg.content.toString()));
                     socket.emit("fwdPkt", JSON.parse(msg.content.toString()));
-                    // ch.ack(msg);
-                    //uncomment this when hardware works flawlessly
+                    ch.ack(msg);
                 },8000);
             },{ noAck: false }
         );
